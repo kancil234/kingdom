@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Three Kingdoms Strategic Campaign</title>
+    <title>Three Kingdoms Campaign</title>
     <style>
         body {
             font-family: 'Microsoft YaHei', sans-serif;
@@ -202,35 +202,6 @@
             visibility: visible;
             opacity: 1;
         }
-        .special-abilities {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin: 15px 0;
-        }
-        .special-ability {
-            padding: 8px 12px;
-            background-color: rgba(139, 0, 0, 0.2);
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        .special-ability:hover {
-            background-color: rgba(139, 0, 0, 0.4);
-        }
-        .special-ability.selected {
-            background-color: rgba(139, 0, 0, 0.7);
-            color: white;
-            box-shadow: 0 0 5px gold;
-        }
-        .warning {
-            color: #8B0000;
-            font-weight: bold;
-            background-color: rgba(255, 0, 0, 0.1);
-            padding: 5px;
-            border-radius: 3px;
-        }
         @media (max-width: 768px) {
             .kingdom {
                 width: 100%;
@@ -248,7 +219,7 @@
     <div class="container">
         <!-- Main Menu Screen -->
         <div id="main-menu" class="screen active-screen">
-            <h1>三国演义: 战略战役 (Three Kingdoms: Strategic Campaign)</h1>
+            <h1>三国演义: 战争战役 (Three Kingdoms: War Campaign)</h1>
             <button onclick="showScreen('kingdom-selection')">开始新游戏 (New Game)</button>
             <button onclick="showScreen('instructions')">游戏说明 (Instructions)</button>
         </div>
@@ -292,7 +263,6 @@
                 <div>战斗: <span id="battles-completed">0</span>/<span id="total-battles">8</span></div>
                 <div>胜利: <span id="victories">0</span></div>
                 <div>失败: <span id="defeats">0</span></div>
-                <div>留守部队: <span id="homeland-troops">0</span></div>
             </div>
             
             <div class="campaign-map" id="campaign-map-container">
@@ -311,7 +281,6 @@
                 <div>天数: <span id="battle-day">1</span></div>
                 <div>回合: <span id="battle-round">1</span></div>
                 <div>敌人: <span id="enemy-kingdom-name">魏国 (Wei)</span></div>
-                <div>留守部队: <span id="current-homeland-troops">0</span></div>
             </div>
             
             <div class="stats">
@@ -357,17 +326,14 @@
                     <div class="soldier-type">
                         步兵 (Infantry): <input type="number" min="0" class="soldier-input" id="deploy-infantry" value="1000">
                         /<span id="max-infantry">4000</span>
-                        <span class="warning">(必须留守: <span id="min-infantry">500</span>)</span>
                     </div>
                     <div class="soldier-type">
                         骑兵 (Cavalry): <input type="number" min="0" class="soldier-input" id="deploy-cavalry" value="1000">
                         /<span id="max-cavalry">3000</span>
-                        <span class="warning">(必须留守: <span id="min-cavalry">300</span>)</span>
                     </div>
                     <div class="soldier-type">
                         弓箭手 (Archers): <input type="number" min="0" class="soldier-input" id="deploy-archers" value="1000">
                         /<span id="max-archers">3000</span>
-                        <span class="warning">(必须留守: <span id="min-archers">300</span>)</span>
                     </div>
                 </div>
                 
@@ -387,14 +353,10 @@
                 </div>
             </div>
             
-            <div class="special-abilities" id="special-abilities-container">
-                <!-- Special abilities will be added here -->
-            </div>
-            
             <div class="action-buttons">
                 <button onclick="battleAction('attack')">攻击 (Attack)</button>
                 <button onclick="battleAction('defend')">防御 (Defend)</button>
-                <button id="special-action-btn" onclick="battleAction('special')" disabled>使用特殊技能 (Use Special)</button>
+                <button onclick="battleAction('special')">特殊技能 (Special)</button>
                 <button onclick="battleAction('retreat')">撤退 (Retreat)</button>
             </div>
             
@@ -426,22 +388,6 @@
                     <li><strong>弓箭手 (Archers)</strong>: 克制步兵，被骑兵克制 | Strong against infantry, weak against cavalry</li>
                 </ul>
                 
-                <h3>战略部署 (Strategic Deployment)</h3>
-                <ul>
-                    <li>你不能派遣所有士兵参战，必须留下部分部队守卫本土</li>
-                    <li>留守部队不足可能导致敌人偷袭你的后方</li>
-                    <li>You cannot deploy all troops, must leave some to defend your homeland</li>
-                    <li>Insufficient homeland defense may lead to enemy attacks on your territory</li>
-                </ul>
-                
-                <h3>特殊技能 (Special Abilities)</h3>
-                <ul>
-                    <li>每个势力有独特的特殊技能</li>
-                    <li>战斗前可以选择要使用的特殊技能</li>
-                    <li>Each kingdom has unique special abilities</li>
-                    <li>You can choose which special ability to use before battle</li>
-                </ul>
-                
                 <h3>战斗指令 (Battle Commands)</h3>
                 <ul>
                     <li><strong>攻击 (Attack)</strong>: 主动攻击敌人 | Launch an attack against the enemy</li>
@@ -449,6 +395,10 @@
                     <li><strong>特殊技能 (Special)</strong>: 使用你的势力的特殊能力 | Use your kingdom's special ability</li>
                     <li><strong>撤退 (Retreat)</strong>: 撤退并损失部分军队 | Retreat and lose some troops</li>
                 </ul>
+                
+                <h3>战役流程 (Campaign Flow)</h3>
+                <p>你需要完成多个历史战役，每个战役后你的军队会保留。胜利会带来增援，失败会减少你的军队。</p>
+                <p>You must complete multiple historical battles. Your army persists between battles. Victories bring reinforcements, defeats reduce your army.</p>
             </div>
             <button onclick="showScreen('main-menu')">返回主菜单 (Back to Menu)</button>
         </div>
@@ -463,11 +413,6 @@
             victories: 0,
             defeats: 0,
             currentBattle: null,
-            homelandTroops: {
-                infantry: 0,
-                cavalry: 0,
-                archers: 0
-            },
             campaignLocations: [
                 { id: 1, name: "虎牢关 (Hulao Pass)", enemy: "wei", difficulty: 1, completed: false },
                 { id: 2, name: "长坂坡 (Changban Slope)", enemy: "wei", difficulty: 2, completed: false },
@@ -491,25 +436,7 @@
                 archers: 1000
             },
             enemyDeployedTroops: null,
-            battleRound: 1,
-            selectedSpecialAbility: null,
-            specialAbilities: {
-                wei: [
-                    { id: "cavalry_charge", name: "骑兵冲锋 (Cavalry Charge)", description: "骑兵造成双倍伤害", effect: "Double cavalry damage" },
-                    { id: "flanking", name: "侧翼攻击 (Flanking Maneuver)", description: "所有部队攻击效率提高30%", effect: "All troops deal 30% more damage" },
-                    { id: "reinforce", name: "紧急增援 (Emergency Reinforce)", description: "立即获得500骑兵增援", effect: "Gain 500 cavalry immediately" }
-                ],
-                shu: [
-                    { id: "crossbows", name: "连弩齐射 (Repeating Crossbows)", description: "弓箭手攻击3次", effect: "Archers attack three times" },
-                    { id: "defense", name: "铁壁防御 (Iron Wall Defense)", description: "防御时伤害减少70%", effect: "Reduce damage taken by 70% when defending" },
-                    { id: "heroic", name: "英雄冲锋 (Heroic Charge)", description: "所有部队士气+20", effect: "+20 morale to all troops" }
-                ],
-                wu: [
-                    { id: "fire_attack", name: "火攻战术 (Fire Attack)", description: "对所有敌军造成大伤害", effect: "Massive damage to all enemy troops" },
-                    { id: "naval", name: "水战优势 (Naval Superiority)", description: "在河流战场获得优势", effect: "Advantage in river battles" },
-                    { id: "ambush", name: "伏兵战术 (Ambush Tactics)", description: "第一回合造成额外50%伤害", effect: "50% bonus damage first round" }
-                ]
-            }
+            battleRound: 1
         };
 
         // Kingdom data
@@ -517,18 +444,21 @@
             wei: {
                 name: "魏国 (Wei)",
                 generals: ["曹操 (Cao Cao)", "司马懿 (Sima Yi)", "张辽 (Zhang Liao)", "许褚 (Xu Chu)", "典韦 (Dian Wei)"],
+                special: "骑兵冲锋 (Cavalry Charge)",
                 bonus: { cavalry: 1.2 },
                 reinforcement: { infantry: 0.2, cavalry: 0.6, archers: 0.2 }
             },
             shu: {
                 name: "蜀国 (Shu)",
                 generals: ["刘备 (Liu Bei)", "诸葛亮 (Zhuge Liang)", "关羽 (Guan Yu)", "张飞 (Zhang Fei)", "赵云 (Zhao Yun)"],
+                special: "连弩齐射 (Repeating Crossbows)",
                 bonus: { infantry: 1.2 },
                 reinforcement: { infantry: 0.6, cavalry: 0.2, archers: 0.2 }
             },
             wu: {
                 name: "吴国 (Wu)",
                 generals: ["孙权 (Sun Quan)", "周瑜 (Zhou Yu)", "吕蒙 (Lü Meng)", "陆逊 (Lu Xun)", "太史慈 (Taishi Ci)"],
+                special: "火攻战术 (Fire Attack)",
                 bonus: { archers: 1.2 },
                 reinforcement: { infantry: 0.2, cavalry: 0.2, archers: 0.6 }
             }
@@ -543,7 +473,6 @@
             
             if (screenId === 'campaign-map-screen') {
                 renderCampaignMap();
-                updateHomelandDisplay();
             }
         }
 
@@ -574,13 +503,6 @@
                 cavalry: 3000,
                 archers: 3000,
                 morale: 100
-            };
-            
-            // Initialize homeland troops (20% of initial troops)
-            gameState.homelandTroops = {
-                infantry: Math.floor(gameState.playerTroops.infantry * 0.2),
-                cavalry: Math.floor(gameState.playerTroops.cavalry * 0.2),
-                archers: Math.floor(gameState.playerTroops.archers * 0.2)
             };
             
             // Update UI
@@ -622,12 +544,6 @@
             });
         }
 
-        // Update homeland troops display
-        function updateHomelandDisplay() {
-            const totalHomeland = calculateTotalTroops(gameState.homelandTroops);
-            document.getElementById('homeland-troops').textContent = totalHomeland;
-        }
-
         // Start a battle
         function startBattle(locationId) {
             const location = gameState.campaignLocations.find(loc => loc.id === locationId);
@@ -642,16 +558,15 @@
                 morale: 100
             };
             
-            // Initialize deployments (cannot deploy more than available minus homeland troops)
+            // Initialize deployments
             gameState.deployedTroops = {
-                infantry: Math.min(1000, gameState.playerTroops.infantry - gameState.homelandTroops.infantry),
-                cavalry: Math.min(1000, gameState.playerTroops.cavalry - gameState.homelandTroops.cavalry),
-                archers: Math.min(1000, gameState.playerTroops.archers - gameState.homelandTroops.archers)
+                infantry: Math.min(1000, gameState.playerTroops.infantry),
+                cavalry: Math.min(1000, gameState.playerTroops.cavalry),
+                archers: Math.min(1000, gameState.playerTroops.archers)
             };
             
             determineEnemyDeployment();
             gameState.battleRound = 1;
-            gameState.selectedSpecialAbility = null;
             
             // Update UI
             document.getElementById('battle-title').textContent = `战斗: ${location.name}`;
@@ -659,7 +574,6 @@
             document.getElementById('battle-day').textContent = gameState.campaignDay;
             document.getElementById('battle-round').textContent = gameState.battleRound;
             document.getElementById('enemy-kingdom-name').textContent = kingdoms[location.enemy].name;
-            document.getElementById('current-homeland-troops').textContent = calculateTotalTroops(gameState.homelandTroops);
             
             // Update troop displays
             updateTroopDisplays();
@@ -667,46 +581,12 @@
             // Display generals
             displayGenerals();
             
-            // Display special abilities
-            displaySpecialAbilities();
-            
             // Clear battle log
             document.getElementById('battle-log').innerHTML = '';
             addToLog(`战役第 ${gameState.campaignDay} 天: ${location.name} 战斗开始!`);
             addToLog(`对抗 ${kingdoms[location.enemy].name} 军队`);
             
             showScreen('battle-screen');
-        }
-
-        // Display special abilities
-        function displaySpecialAbilities() {
-            const container = document.getElementById('special-abilities-container');
-            container.innerHTML = '<h3>选择特殊技能 (Select Special Ability)</h3>';
-            
-            const abilities = gameState.specialAbilities[gameState.selectedKingdom];
-            abilities.forEach(ability => {
-                const abilityEl = document.createElement('div');
-                abilityEl.className = 'special-ability';
-                abilityEl.textContent = `${ability.name}: ${ability.description}`;
-                abilityEl.onclick = () => selectSpecialAbility(ability.id);
-                container.appendChild(abilityEl);
-            });
-        }
-
-        // Select special ability
-        function selectSpecialAbility(abilityId) {
-            gameState.selectedSpecialAbility = abilityId;
-            
-            // Highlight selected ability
-            document.querySelectorAll('.special-ability').forEach(el => {
-                el.classList.remove('selected');
-                if (el.textContent.includes(abilityId.split('_').join(' '))) {
-                    el.classList.add('selected');
-                }
-            });
-            
-            document.getElementById('special-action-btn').disabled = false;
-            addToLog(`准备使用特殊技能: ${gameState.specialAbilities[gameState.selectedKingdom].find(a => a.id === abilityId).name}`);
         }
 
         // Determine enemy deployment
@@ -751,23 +631,14 @@
             document.getElementById('enemy-archers').textContent = gameState.enemyTroops.archers;
             document.getElementById('enemy-morale').textContent = gameState.enemyTroops.morale;
             
-            // Deployment inputs - can't deploy more than available minus homeland troops
-            const maxInfantry = gameState.playerTroops.infantry - gameState.homelandTroops.infantry;
-            const maxCavalry = gameState.playerTroops.cavalry - gameState.homelandTroops.cavalry;
-            const maxArchers = gameState.playerTroops.archers - gameState.homelandTroops.archers;
+            // Deployment inputs
+            document.getElementById('deploy-infantry').value = gameState.deployedTroops.infantry;
+            document.getElementById('deploy-cavalry').value = gameState.deployedTroops.cavalry;
+            document.getElementById('deploy-archers').value = gameState.deployedTroops.archers;
             
-            document.getElementById('deploy-infantry').value = Math.min(gameState.deployedTroops.infantry, maxInfantry);
-            document.getElementById('deploy-cavalry').value = Math.min(gameState.deployedTroops.cavalry, maxCavalry);
-            document.getElementById('deploy-archers').value = Math.min(gameState.deployedTroops.archers, maxArchers);
-            
-            document.getElementById('max-infantry').textContent = maxInfantry;
-            document.getElementById('max-cavalry').textContent = maxCavalry;
-            document.getElementById('max-archers').textContent = maxArchers;
-            
-            // Minimum required to leave at homeland (10% of total)
-            document.getElementById('min-infantry').textContent = gameState.homelandTroops.infantry;
-            document.getElementById('min-cavalry').textContent = gameState.homelandTroops.cavalry;
-            document.getElementById('min-archers').textContent = gameState.homelandTroops.archers;
+            document.getElementById('max-infantry').textContent = gameState.playerTroops.infantry;
+            document.getElementById('max-cavalry').textContent = gameState.playerTroops.cavalry;
+            document.getElementById('max-archers').textContent = gameState.playerTroops.archers;
         }
 
         // Display generals
@@ -799,27 +670,10 @@
         // Battle actions
         function battleAction(action) {
             // Get deployed troops from inputs
-            const deployedInfantry = parseInt(document.getElementById('deploy-infantry').value) || 0;
-            const deployedCavalry = parseInt(document.getElementById('deploy-cavalry').value) || 0;
-            const deployedArchers = parseInt(document.getElementById('deploy-archers').value) || 0;
-            
-            // Check if leaving enough troops at homeland
-            const remainingInfantry = gameState.playerTroops.infantry - deployedInfantry;
-            const remainingCavalry = gameState.playerTroops.cavalry - deployedCavalry;
-            const remainingArchers = gameState.playerTroops.archers - deployedArchers;
-            
-            if (remainingInfantry < gameState.homelandTroops.infantry || 
-                remainingCavalry < gameState.homelandTroops.cavalry || 
-                remainingArchers < gameState.homelandTroops.archers) {
-                addToLog("<span class='defeat'>错误: 你不能派遣所有士兵! 必须留下足够的部队守卫本土!</span>");
-                addToLog("<span class='defeat'>Error: You cannot deploy all troops! Must leave enough to defend homeland!</span>");
-                return;
-            }
-            
             gameState.deployedTroops = {
-                infantry: deployedInfantry,
-                cavalry: deployedCavalry,
-                archers: deployedArchers
+                infantry: parseInt(document.getElementById('deploy-infantry').value) || 0,
+                cavalry: parseInt(document.getElementById('deploy-cavalry').value) || 0,
+                archers: parseInt(document.getElementById('deploy-archers').value) || 0
             };
             
             // Validate deployment
@@ -861,29 +715,39 @@
                     break;
                     
                 case 'special':
-                    if (!gameState.selectedSpecialAbility) {
-                        addToLog("错误: 请先选择特殊技能!");
-                        return;
+                    addToLog(`第 ${gameState.battleRound} 回合: 你使用 ${kingdoms[gameState.selectedKingdom].special}!`);
+                    
+                    // Special attack based on kingdom
+                    if (gameState.selectedKingdom === 'wei') {
+                        // Wei cavalry charge
+                        const cavalryDamage = gameState.deployedTroops.cavalry * (1.5 + Math.random()) * kingdoms.wei.bonus.cavalry;
+                        playerDamage += cavalryDamage;
+                        addToLog(`骑兵冲锋造成 ${Math.floor(cavalryDamage)} 伤害!`);
+                    } else if (gameState.selectedKingdom === 'shu') {
+                        // Shu repeating crossbows
+                        const archerDamage = gameState.deployedTroops.archers * (1.2 + Math.random()) * kingdoms.shu.bonus.infantry;
+                        playerDamage += archerDamage;
+                        addToLog(`连弩齐射造成 ${Math.floor(archerDamage)} 伤害!`);
+                    } else if (gameState.selectedKingdom === 'wu') {
+                        // Wu fire attack
+                        const fireDamage = (gameState.deployedTroops.infantry + gameState.deployedTroops.cavalry + gameState.deployedTroops.archers) * 
+                                          (0.8 + Math.random() * 0.4) * kingdoms.wu.bonus.archers;
+                        playerDamage += fireDamage;
+                        gameState.enemyTroops.morale = Math.max(0, gameState.enemyTroops.morale - 10);
+                        addToLog(`火攻战术造成 ${Math.floor(fireDamage)} 伤害并降低敌军士气!`);
                     }
-                    
-                    addToLog(`第 ${gameState.battleRound} 回合: 你使用特殊技能 - ${getSpecialAbilityName(gameState.selectedSpecialAbility)}!`);
-                    
-                    // Apply special ability effects
-                    const specialDamage = applySpecialAbility();
-                    playerDamage += specialDamage;
                     
                     // Enemy still counterattacks
                     enemyDamage += calculateTroopDamage(gameState.enemyDeployedTroops.infantry, 'infantry', gameState.deployedTroops, false);
                     enemyDamage += calculateTroopDamage(gameState.enemyDeployedTroops.cavalry, 'cavalry', gameState.deployedTroops, false);
                     enemyDamage += calculateTroopDamage(gameState.enemyDeployedTroops.archers, 'archers', gameState.deployedTroops, false);
                     
-                    // Reset special ability after use
-                    gameState.selectedSpecialAbility = null;
-                    document.getElementById('special-action-btn').disabled = true;
+                    // Morale bonus for special
+                    gameState.playerTroops.morale = Math.min(100, gameState.playerTroops.morale + 5);
                     break;
                     
                 case 'retreat':
-                    const retreatLoss = Math.floor(calculateTotalTroops(gameState.deployedTroops) * 0.3;
+                    const retreatLoss = Math.floor(calculateTotalTroops(gameState.deployedTroops) * 0.3);
                     
                     // Distribute losses
                     for (const type in gameState.deployedTroops) {
@@ -910,71 +774,6 @@
             
             // Check battle end
             checkBattleEnd();
-        }
-
-        // Apply special ability effects
-        function applySpecialAbility() {
-            const ability = gameState.specialAbilities[gameState.selectedKingdom]
-                .find(a => a.id === gameState.selectedSpecialAbility);
-            let totalDamage = 0;
-            
-            switch (gameState.selectedSpecialAbility) {
-                case 'cavalry_charge': // Wei - Double cavalry damage
-                    totalDamage += calculateTroopDamage(gameState.deployedTroops.cavalry, 'cavalry', gameState.enemyDeployedTroops, true) * 2;
-                    break;
-                    
-                case 'flanking': // Wei - All troops deal 30% more damage
-                    totalDamage += calculateTroopDamage(gameState.deployedTroops.infantry, 'infantry', gameState.enemyDeployedTroops, true) * 1.3;
-                    totalDamage += calculateTroopDamage(gameState.deployedTroops.cavalry, 'cavalry', gameState.enemyDeployedTroops, true) * 1.3;
-                    totalDamage += calculateTroopDamage(gameState.deployedTroops.archers, 'archers', gameState.enemyDeployedTroops, true) * 1.3;
-                    break;
-                    
-                case 'reinforce': // Wei - Gain 500 cavalry
-                    gameState.playerTroops.cavalry += 500;
-                    addToLog("<span class='reinforcement'>获得500骑兵增援!</span>");
-                    break;
-                    
-                case 'crossbows': // Shu - Archers attack three times
-                    totalDamage += calculateTroopDamage(gameState.deployedTroops.archers, 'archers', gameState.enemyDeployedTroops, true) * 3;
-                    break;
-                    
-                case 'defense': // Shu - Reduce damage taken by 70% when defending
-                    // This is handled in the battleAction function
-                    break;
-                    
-                case 'heroic': // Shu - +20 morale to all troops
-                    gameState.playerTroops.morale = Math.min(100, gameState.playerTroops.morale + 20);
-                    addToLog("<span class='reinforcement'>全军士气大增!</span>");
-                    break;
-                    
-                case 'fire_attack': // Wu - Massive damage to all enemy troops
-                    totalDamage += calculateTotalTroops(gameState.enemyDeployedTroops) * 0.5;
-                    addToLog("<span class='victory'>火攻造成巨大伤害!</span>");
-                    break;
-                    
-                case 'naval': // Wu - Advantage in river battles
-                    if (gameState.currentBattle.name.includes("赤壁") || gameState.currentBattle.name.includes("Red Cliffs")) {
-                        totalDamage += calculateTotalTroops(gameState.deployedTroops) * 0.5;
-                        addToLog("<span class='victory'>水战优势生效!</span>");
-                    }
-                    break;
-                    
-                case 'ambush': // Wu - 50% bonus damage first round
-                    if (gameState.battleRound === 1) {
-                        totalDamage += calculateTotalTroops(gameState.deployedTroops) * 0.5;
-                        addToLog("<span class='victory'>伏兵战术成功!</span>");
-                    }
-                    break;
-            }
-            
-            return Math.floor(totalDamage);
-        }
-
-        // Get special ability name
-        function getSpecialAbilityName(abilityId) {
-            const ability = gameState.specialAbilities[gameState.selectedKingdom]
-                .find(a => a.id === abilityId);
-            return ability ? ability.name : "Unknown Ability";
         }
 
         // Calculate troop damage
@@ -1112,29 +911,13 @@
                 addToLog(`<span class='reinforcement'>从敌军获得资源: 步兵 +${infantryGain}, 骑兵 +${cavalryGain}, 弓箭手 +${archersGain}</span>`);
             } else {
                 gameState.defeats++;
-                
-                // Check for homeland attack (if left too few troops)
-                const homelandDefense = calculateTotalTroops(gameState.homelandTroops);
-                const homelandAttackChance = 0.3 * (1 - (homelandDefense / 2000));
-                
-                if (Math.random() < homelandAttackChance) {
-                    const attackDamage = Math.floor(homelandDefense * 0.5);
-                    addToLog(`<span class='defeat'>敌军偷袭了你的后方! 留守部队损失 ${attackDamage} 兵力!</span>`);
-                    
-                    // Distribute damage to homeland troops
-                    const damageRatio = attackDamage / homelandDefense;
-                    for (const type in gameState.homelandTroops) {
-                        gameState.homelandTroops[type] = Math.max(0, 
-                            gameState.homelandTroops[type] - Math.floor(gameState.homelandTroops[type] * damageRatio));
-                    }
-                }
             }
             
             // Next day
             gameState.campaignDay++;
             
             // Daily reinforcements
-            const reinforcements = calculateReinforcements();
+            const reinforcements = calculateReinforcements(gameState.selectedKingdom);
             gameState.playerTroops.infantry += reinforcements.infantry;
             gameState.playerTroops.cavalry += reinforcements.cavalry;
             gameState.playerTroops.archers += reinforcements.archers;
@@ -1144,7 +927,6 @@
             
             // Update campaign stats
             updateCampaignStats();
-            updateHomelandDisplay();
             
             // Check campaign completion
             if (gameState.battlesCompleted >= gameState.campaignLocations.length) {
@@ -1160,9 +942,9 @@
         }
 
         // Calculate daily reinforcements
-        function calculateReinforcements() {
+        function calculateReinforcements(kingdom) {
             const baseAmount = 200 + Math.floor(Math.random() * 300);
-            const ratios = kingdoms[gameState.selectedKingdom].reinforcement;
+            const ratios = kingdoms[kingdom].reinforcement;
             
             return {
                 infantry: Math.floor(baseAmount * ratios.infantry),
